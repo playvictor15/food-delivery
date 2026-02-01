@@ -17,6 +17,12 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 });
 
 // Cadastrar Produto
+try {
+    // Verificação de segurança para você ver no console se o db existe
+    console.log("Status do DB:", db); 
+    
+    await addDoc(collection(db, "products"), {
+        title: title,
 const form = document.getElementById('product-form');
 
 form.addEventListener('submit', async (e) => {
