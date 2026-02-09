@@ -1,4 +1,3 @@
-
 import { db } from './firebase-config.js'; 
 import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -6,43 +5,30 @@ const container = document.getElementById('products-container');
 
 async function loadProducts() {
     try {
-        console.log("Status do Banco de dados:", db); 
-
-        // Se o db for undefined, o erro acontece na linha abaixo
+        // Busca produtos ordenados (mais novos primeiro)
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
         
+        // Limpa o loading
         container.innerHTML = ""; 
 
+        // Se não tiver produtos
         if(querySnapshot.empty) {
             container.innerHTML = '<p class="col-span-full text-center text-gray-500">Nenhum produto cadastrado no momento.</p>';
             return;
         }
 
+        // Loop para criar os cards
         querySnapshot.forEach((doc) => {
             const product = doc.data();
-            // ... (resto do seu código de exibir o produto)
-            // Vou resumir para caber na resposta, mantenha o seu HTML aqui
-            const html = `<div class="bg-white p-4 rounded shadow"><h3>${product.title}</h3></div>`;
-            container.innerHTML += html;
-        });
-
-    } catch (error) {
-        console.error("Erro ao buscar produtos:", error);
-        // Mostra o erro na tela para facilitar
-        container.innerHTML = `<p class="col-span-full text-center text-red-500">Erro técnico: ${error.message}</p>`;
-    }
-}
-
-loadProducts();
-
-        querySnapshot.forEach((doc) => {
-            const product = doc.data();
+            
+            // Formata o preço
             const priceFormatted = parseFloat(product.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             
-            // Define cor do badge baseada na plataforma
+            // Define cor do badge
             const badgeColor = product.platform === 'Shopee' ? 'bg-orange-500' : 'bg-yellow-500 text-black';
 
+            // Cria o HTML do card
             const html = `
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                     <div class="relative h-48 overflow-hidden">
@@ -65,8 +51,9 @@ loadProducts();
 
     } catch (error) {
         console.error("Erro ao buscar produtos:", error);
-        container.innerHTML = '<p class="col-span-full text-center text-red-500">Erro ao carregar produtos.</p>';
+        container.innerHTML = `<p class="col-span-full text-center text-red-500">Erro: ${error.message}</p>`;
     }
 }
 
+// Executa a função
 loadProducts();
